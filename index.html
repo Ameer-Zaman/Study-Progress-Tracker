@@ -1,112 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JS Quest: Ultimate Mastery Tracker</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Canvas Confetti Library for dopamine hits -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>javascript-mastery.log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --bg:#1a1b26;
+  --surface:#20222f;
+  --inset:#16161e;
+  --border:#2f334d;
+  --text:#c0caf5;
+  --dim:#565f89;
+  --purple:#bb9af7;
+  --green:#9ece6a;
+  --orange:#ff9e64;
+  --red:#f7768e;
+  --blue:#7aa2f7;
+  --cyan:#7dcfff;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --sans:'Inter', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(122,162,247,0.08), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(187,154,247,0.07), transparent 40%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  padding:2.5rem 1rem 5rem;
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+}
+a{color:inherit}
+.app{width:100%;max-width:900px}
+
+/* ---------- Terminal window chrome ---------- */
+.term{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+}
+.term-bar{
+  background:var(--inset);
+  padding:0.6rem 0.9rem;
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  border-bottom:1px solid var(--border);
+}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-dot.r{background:#f7768e}
+.term-dot.y{background:#e0af68}
+.term-dot.g{background:#9ece6a}
+.term-path{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--dim);
+  margin-left:0.4rem;
+}
+.term-body{padding:1.4rem 1.5rem}
+
+/* ---------- Hero ---------- */
+.hero{margin-bottom:2rem}
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--green);
+  letter-spacing:0.5px;
+}
+.hero-eyebrow::before{content:"$ "; color:var(--dim)}
+.hero h1{
+  font-family:var(--mono);
+  font-weight:800;
+  font-size:2rem;
+  margin:0.5rem 0 0.6rem;
+  letter-spacing:-0.5px;
+}
+.hero h1 .kw{color:var(--purple)}
+.hero h1 .fn{color:var(--blue)}
+.hero h1 .cursor{
+  display:inline-block;width:0.55ch;background:var(--green);
+  animation:blink 1.1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0}}
+.hero p{color:var(--dim); font-size:0.92rem; max-width:56ch}
+
+/* ---------- Dashboard ---------- */
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
+  gap:1rem;
+  margin-bottom:2.2rem;
+}
+.pane{
+  background:var(--inset);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1.1rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;
+}
+.pane-label{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  color:var(--dim);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:0.4rem;
+}
+.pane-label::before{content:"//"; color:var(--border)}
+
+.branch-row{
+  font-family:var(--mono);
+  font-size:1.1rem;
+  color:var(--purple);
+  display:flex;
+  align-items:center;
+  gap:0.4rem;
+}
+.branch-row::before{content:"⎇"; color:var(--dim); font-size:1rem}
+.rank-tag{
+  align-self:flex-start;
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--green);
+  background:rgba(158,206,106,0.1);
+  border:1px solid rgba(158,206,106,0.3);
+  padding:0.15rem 0.5rem;
+  border-radius:4px;
+}
+
+.radial-progress-container{position:relative;width:78px;height:78px;align-self:center}
+.radial-svg{transform:rotate(-90deg)}
+.bg-circle,.fg-circle{fill:none;stroke-width:7px}
+.bg-circle{stroke:rgba(255,255,255,0.06)}
+.fg-circle{stroke:var(--cyan);stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1)}
+.progress-percent{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--mono); font-weight:700; font-size:1.05rem;
+}
+
+.timer-display{
+  font-family:var(--mono);
+  font-size:2.4rem;
+  font-weight:700;
+  color:var(--red);
+  letter-spacing:1px;
+  transition:color 0.3s;
+}
+.timer-mode{font-family:var(--mono); font-size:0.75rem; color:var(--dim)}
+.timer-controls{display:flex; gap:0.5rem; margin-top:0.2rem}
+.btn,.btn-outline{
+  font-family:var(--mono);
+  padding:0.45rem 0.85rem;
+  border-radius:6px;
+  font-weight:600;
+  font-size:0.78rem;
+  cursor:pointer;
+  border:1px solid transparent;
+  transition:all 0.15s ease;
+}
+.btn{background:var(--green); color:#111; }
+.btn:hover{background:#8fbf58; transform:translateY(-1px)}
+.btn:focus-visible,.btn-outline:focus-visible,.sandbox-filter-btn:focus-visible,.sandbox-toggle:focus-visible{
+  outline:2px solid var(--cyan); outline-offset:2px;
+}
+.btn-outline{background:transparent; border-color:var(--border); color:var(--dim)}
+.btn-outline:hover{border-color:var(--dim); color:var(--text)}
+
+.xp-numbers{font-family:var(--mono); font-size:1rem; font-weight:700}
+.xp-numbers .max{color:var(--dim); font-weight:400}
+.xp-bar-container{
+  width:100%; height:10px; background:rgba(255,255,255,0.06);
+  border-radius:5px; overflow:hidden; font-family:var(--mono);
+}
+.xp-bar-fill{height:100%; width:0%; background:linear-gradient(90deg, var(--blue), var(--purple)); border-radius:5px; transition:width 0.4s ease-out}
+.motivate-text{font-family:var(--mono); font-size:0.72rem; color:var(--dim); font-style:normal}
+
+/* ---------- Quest explorer (file tree) ---------- */
+.explorer-header{
+  font-family:var(--mono);
+  font-size:0.78rem;
+  color:var(--dim);
+  margin-bottom:0.9rem;
+  padding-bottom:0.6rem;
+  border-bottom:1px solid var(--border);
+  letter-spacing:0.5px;
+}
+.explorer-header .path{color:var(--cyan)}
+
+.quest-list{display:flex; flex-direction:column; gap:0.6rem}
+.quest-wrapper{
+  background:var(--inset);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.quest-header{
+  padding:0.85rem 1rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+  gap:0.75rem;
+}
+.quest-header:hover{background:rgba(255,255,255,0.02)}
+.quest-header-left{display:flex; align-items:center; gap:0.7rem; min-width:0}
+.arrow-icon{
+  font-family:var(--mono); color:var(--dim); font-size:0.75rem;
+  transition:transform 0.25s ease; flex-shrink:0;
+}
+.quest-wrapper.active .arrow-icon{transform:rotate(90deg); color:var(--cyan)}
+.folder-icon{flex-shrink:0}
+.quest-title-box{min-width:0}
+.quest-title-box h4{
+  font-family:var(--mono); font-size:0.92rem; font-weight:700; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.quest-sub-summary{font-family:var(--mono); font-size:0.7rem; color:var(--dim); margin-top:0.15rem}
+.header-progress-pill{
+  font-family:var(--mono); font-size:0.7rem; color:var(--green);
+  background:rgba(158,206,106,0.08);
+  border:1px solid rgba(158,206,106,0.25);
+  padding:0.2rem 0.55rem; border-radius:4px; flex-shrink:0;
+}
+
+.quest-details-dropdown{max-height:0; overflow:hidden; transition:max-height 0.3s ease-out; border-top:0px solid var(--border)}
+.quest-wrapper.active .quest-details-dropdown{max-height:900px; border-top:1px solid var(--border)}
+
+.resource-row{padding:0.7rem 1rem; border-bottom:1px solid var(--border)}
+.docs-link{
+  text-decoration:none; color:var(--blue); font-family:var(--mono); font-weight:600; font-size:0.75rem;
+  background:rgba(122,162,247,0.08); padding:0.4rem 0.7rem; border-radius:5px;
+  border:1px solid rgba(122,162,247,0.25); display:inline-flex; align-items:center; gap:0.4rem;
+  transition:background 0.2s;
+}
+.docs-link:hover{background:rgba(122,162,247,0.16)}
+.docs-link::before{content:"→"}
+
+.sub-quest-list{padding:0.6rem; display:flex; flex-direction:column; gap:0.4rem}
+.sub-quest-item{
+  display:flex; align-items:center; justify-content:space-between; gap:0.75rem;
+  padding:0.6rem 0.7rem; background:rgba(255,255,255,0.015);
+  border:1px solid var(--border); border-radius:6px; cursor:pointer;
+  transition:all 0.15s ease;
+}
+.sub-quest-item:hover{background:rgba(255,255,255,0.04); border-color:var(--dim)}
+.sub-left{display:flex; align-items:center; gap:0.65rem; min-width:0}
+.sub-checkbox{
+  font-family:var(--mono); font-weight:700; font-size:0.85rem; color:var(--dim);
+  border:1px solid var(--border); border-radius:4px; width:26px; height:22px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition:all 0.2s;
+}
+.sub-quest-item.completed .sub-checkbox{background:rgba(158,206,106,0.12); border-color:var(--green); color:var(--green)}
+.sub-title{font-size:0.85rem; font-weight:500; line-height:1.3}
+.sub-quest-item.completed .sub-title{color:var(--dim); text-decoration:line-through}
+.sub-right{display:flex; align-items:center; gap:0.5rem; flex-shrink:0}
+.importance-tag{
+  font-family:var(--mono); font-size:0.62rem; font-weight:700;
+  padding:0.15rem 0.4rem; border-radius:4px; white-space:nowrap;
+}
+.importance-tag.critical{background:rgba(247,118,142,0.12); color:var(--red); border:1px solid rgba(247,118,142,0.3)}
+.importance-tag.important{background:rgba(255,158,100,0.12); color:var(--orange); border:1px solid rgba(255,158,100,0.3)}
+.importance-tag.standard{background:rgba(122,162,247,0.1); color:var(--blue); border:1px solid rgba(122,162,247,0.25)}
+.sub-xp{font-family:var(--mono); font-size:0.7rem; color:var(--dim); white-space:nowrap}
+.sub-xp::before{content:"// "}
+
+/* ---------- Exam sandbox / REPL ---------- */
+.exam-sandbox{margin-top:2.5rem}
+.sandbox-header{margin-bottom:1.2rem}
+.sandbox-header .hero-eyebrow{color:var(--purple)}
+.sandbox-header h2{font-family:var(--mono); font-size:1.25rem; margin:0.4rem 0 0.3rem}
+.sandbox-header p{color:var(--dim); font-size:0.85rem}
+
+.sandbox-filters{display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.2rem}
+.sandbox-filter-btn{
+  font-family:var(--mono); background:var(--inset); color:var(--dim);
+  border:1px solid var(--border); padding:0.4rem 0.75rem; font-size:0.75rem;
+  font-weight:600; border-radius:6px; cursor:pointer; transition:all 0.15s ease;
+}
+.sandbox-filter-btn::before{content:"--"}
+.sandbox-filter-btn:hover{border-color:var(--dim); color:var(--text)}
+.sandbox-filter-btn.active{background:rgba(187,154,247,0.12); border-color:var(--purple); color:var(--purple)}
+
+.sandbox-questions{display:flex; flex-direction:column; gap:1rem}
+.sandbox-card{background:var(--inset); border:1px solid var(--border); border-radius:8px; overflow:hidden}
+.sandbox-card-tab{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0.6rem 0.9rem; background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border);
+}
+.sandbox-badge{font-family:var(--mono); font-size:0.65rem; font-weight:800; text-transform:uppercase; padding:0.15rem 0.5rem; border-radius:4px}
+.sandbox-badge.easy{background:rgba(158,206,106,0.15); color:var(--green); border:1px solid rgba(158,206,106,0.3)}
+.sandbox-badge.hard{background:rgba(255,158,100,0.15); color:var(--orange); border:1px solid rgba(255,158,100,0.3)}
+.sandbox-badge.impossible{background:rgba(247,118,142,0.15); color:var(--red); border:1px solid rgba(247,118,142,0.3)}
+.sandbox-filename{font-family:var(--mono); font-size:0.72rem; color:var(--dim)}
+
+.sandbox-card-body{padding:1rem 1.1rem 1.1rem}
+.sandbox-card h3{font-family:var(--mono); font-size:1rem; color:var(--text); margin-bottom:0.6rem}
+.sandbox-text{color:var(--dim); font-size:0.88rem; margin-bottom:0.8rem}
+.sandbox-card pre{
+  background:var(--bg); padding:0.9rem; border-radius:6px; overflow-x:auto;
+  border-left:3px solid var(--purple); margin-bottom:0.9rem;
+}
+.sandbox-card code{font-family:var(--mono); font-size:0.82rem; color:var(--text); line-height:1.6}
+.sandbox-toggle{
+  font-family:var(--mono); background:transparent; color:var(--cyan);
+  font-weight:600; font-size:0.75rem; border:1px solid rgba(125,207,255,0.3);
+  padding:0.45rem 0.8rem; border-radius:6px; cursor:pointer; transition:background 0.2s;
+}
+.sandbox-toggle::before{content:"$ "; color:var(--dim)}
+.sandbox-toggle:hover{background:rgba(125,207,255,0.08)}
+
+.sandbox-answer{
+  display:none; background:var(--bg); border:1px dashed var(--border); border-radius:6px;
+  padding:0.9rem 1rem; margin-top:0.9rem; font-family:var(--mono);
+  animation:sandboxFade 0.2s ease-out;
+}
+@keyframes sandboxFade{from{opacity:0; transform:translateY(3px)} to{opacity:1; transform:translateY(0)}}
+.sandbox-answer-heading{font-weight:700; color:var(--green); font-size:0.85rem; margin-bottom:0.5rem}
+.sandbox-answer-heading::before{content:"> "; color:var(--dim)}
+.sandbox-answer-desc{color:var(--dim); font-size:0.82rem; font-family:var(--sans); line-height:1.5}
+.sandbox-answer-desc code{background:rgba(255,255,255,0.06); padding:0.05rem 0.3rem; border-radius:3px; font-size:0.8em}
+
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-3px,3px)}50%{transform:translate(3px,-3px)}75%{transform:translate(-3px,-3px)}}
+.shake{animation:shake 0.3s cubic-bezier(.36,.07,.19,.97) both}
+
+@media (max-width:520px){
+  .hero h1{font-size:1.5rem}
+  .term-body{padding:1.1rem}
+  .timer-display{font-size:1.9rem}
+}
+</style>
 </head>
 <body>
 
-  <div class="game-container">
-    <!-- HERO HEADER -->
-    <header class="hero-header">
-      <div class="badge">⚔️ ADVANCED JS MASTERY QUEST</div>
-      <h1>Level Up Your JavaScript</h1>
-      <p>Expand the topics, conquer the sub-quests, and claim your ultimate developer status!</p>
-    </header>
-
-    <!-- STATUS DASHBOARD -->
-    <section class="dashboard">
-      <div class="stat-card level-card">
-        <h3>PLAYER LEVEL</h3>
-        <div class="level-badge" id="level-display">LVL 1</div>
-        <p id="rank-display">Novice Coder</p>
-      </div>
-
-      <div class="stat-card progress-card">
-        <h3>TOTAL PROGRESS</h3>
-        <div class="radial-progress-container">
-          <svg class="radial-svg" viewBox="0 0 120 120">
-            <circle class="bg-circle" cx="60" cy="60" r="50" />
-            <circle class="fg-circle" id="radial-progress" cx="60" cy="60" r="50" />
-          </svg>
-          <span class="progress-percent" id="percent-text">0%</span>
-        </div>
-      </div>
-
-      <!-- FOCUS TIMER CARD -->
-      <div class="stat-card timer-card">
-        <h3>FOCUS TIMER (POMODORO)</h3>
-        <div class="timer-display" id="time-display">25:00</div>
-        <div class="timer-mode" id="timer-mode">Work Session 🔥</div>
-        <div class="timer-controls">
-          <button id="start-timer" class="btn">▶ Start</button>
-          <button id="reset-timer" class="btn-outline">↺ Reset</button>
-        </div>
-      </div>
-
-      <div class="stat-card xp-card">
-        <h3>EXPERIENCE POINTS (XP)</h3>
-        <div class="xp-numbers"><span id="current-xp">0</span> / <span id="max-xp">1000</span> XP</div>
-        <div class="xp-bar-container">
-          <div class="xp-bar-fill" id="xp-bar"></div>
-        </div>
-        <p class="motivate-text" id="motivate-banner">Complete sub-tasks to earn XP!</p>
-      </div>
-    </section>
-
-    <!-- QUEST LIST (THE SYLLABUS) -->
-    <main class="quest-board">
-      <h2>Active Quests (Syllabus & Inner Topics)</h2>
-      <div class="quest-list" id="quest-list">
-        <!-- Main Quests and dropdowns will be dynamically injected here -->
-      </div>
-    </main>
-  </div>
-  <!-- ================= START OF EXAM SANDBOX SPACE ================= -->
-<section class="exam-sandbox">
-  <div class="sandbox-header">
-    <h2>🧠 Code Masterclass: Exam & Interview Prep</h2>
-    <p>Sharpen your instincts on the nastiest JavaScript edge cases, traps, and concepts.</p>
-  </div>
-
-  <!-- Filter Buttons -->
-  <div class="sandbox-filters">
-    <button class="sandbox-filter-btn active" onclick="filterSandbox(event, 'all')">All Practice Puzzles</button>
-    <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'easy-medium')">Simple & Medium</button>
-    <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'hard')">Hard</button>
-    <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'impossible')">Impossible / Interview</button>
-  </div>
-
-  <!-- Quiz Space Container -->
-  <div class="sandbox-questions">
-
-    <!-- QUESTION 1 -->
-    <div class="sandbox-card easy-medium">
-      <span class="sandbox-badge easy">Simple</span>
-      <h3>Q1. The Nullish Fallback Trap</h3>
-      <p class="sandbox-text">Predict the exact value of <code>currentSpeed</code> logged to the console:</p>
-      <pre><code>const speed = 0;
-const currentSpeed = speed ?? 100;
-console.log(currentSpeed);</code></pre>
-      <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">Show Answer & Explanation</button>
-      <div class="sandbox-answer">
-        <div class="sandbox-answer-heading">✔️ Answer: 0</div>
-        <p class="sandbox-answer-desc">
-          <strong>Why:</strong> The nullish coalescing operator (<code>??</code>) strictly checks for <code>null</code> or <code>undefined</code>. Since <code>0</code> is a valid falsy number, the fallback <code>100</code> is ignored.
-        </p>
-      </div>
+<div class="app">
+  <div class="term">
+    <div class="term-bar">
+      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+      <span class="term-path" id="term-path">~/study/javascript-mastery.log — loading saved progress…</span>
     </div>
 
-    <!-- QUESTION 2 -->
-    <div class="sandbox-card hard">
-      <span class="sandbox-badge hard">Hard</span>
-      <h3>Q2. Closure Scope & Value Increment</h3>
-      <p class="sandbox-text">What sequence of numbers prints when executing these functions?</p>
-      <pre><code>function createCounter(start) {
+    <div class="term-body">
+      <header class="hero">
+        <div class="hero-eyebrow">node javascript-mastery.js</div>
+        <h1><span class="kw">const</span> <span class="fn">skill</span> = <span id="hero-level">level(1)</span><span class="cursor">&nbsp;</span></h1>
+        <p>Expand a topic, clear its sub-tasks, and watch the build pass. Progress saves automatically.</p>
+      </header>
+
+      <section class="dashboard">
+        <div class="pane">
+          <div class="pane-label">current branch</div>
+          <div class="branch-row" id="level-display">lvl-1</div>
+          <div class="rank-tag" id="rank-display">Console Explorer 🍼</div>
+        </div>
+
+        <div class="pane" style="align-items:center">
+          <div class="pane-label" style="align-self:flex-start">build progress</div>
+          <div class="radial-progress-container">
+            <svg class="radial-svg" viewBox="0 0 120 120">
+              <circle class="bg-circle" cx="60" cy="60" r="50" />
+              <circle class="fg-circle" id="radial-progress" cx="60" cy="60" r="50" />
+            </svg>
+            <span class="progress-percent" id="percent-text">0%</span>
+          </div>
+        </div>
+
+        <div class="pane">
+          <div class="pane-label">focus timer</div>
+          <div class="timer-display" id="time-display">25:00</div>
+          <div class="timer-mode" id="timer-mode">work session</div>
+          <div class="timer-controls">
+            <button id="start-timer" class="btn">run</button>
+            <button id="reset-timer" class="btn-outline">reset</button>
+          </div>
+        </div>
+
+        <div class="pane">
+          <div class="pane-label">experience</div>
+          <div class="xp-numbers"><span id="current-xp">0</span><span class="max"> / <span id="max-xp">1000</span> xp</span></div>
+          <div class="xp-bar-container"><div class="xp-bar-fill" id="xp-bar"></div></div>
+          <p class="motivate-text" id="motivate-banner">clear sub-tasks to earn xp</p>
+        </div>
+      </section>
+
+      <main>
+        <div class="explorer-header"><span class="path">src/</span> — topics &amp; sub-tasks</div>
+        <div class="quest-list" id="quest-list"></div>
+      </main>
+
+      <section class="exam-sandbox">
+        <div class="sandbox-header">
+          <div class="hero-eyebrow">npm test</div>
+          <h2>Code masterclass: exam &amp; interview prep</h2>
+          <p>Sharpen your instincts on the nastiest JavaScript edge cases, traps, and concepts.</p>
+        </div>
+
+        <div class="sandbox-filters">
+          <button class="sandbox-filter-btn active" onclick="filterSandbox(event, 'all')">all</button>
+          <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'easy-medium')">easy-medium</button>
+          <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'hard')">hard</button>
+          <button class="sandbox-filter-btn" onclick="filterSandbox(event, 'impossible')">impossible</button>
+        </div>
+
+        <div class="sandbox-questions">
+
+          <div class="sandbox-card easy-medium">
+            <div class="sandbox-card-tab">
+              <span class="sandbox-badge easy">Simple</span>
+              <span class="sandbox-filename">q1.test.js</span>
+            </div>
+            <div class="sandbox-card-body">
+              <h3>Q1. The Nullish Fallback Trap</h3>
+              <p class="sandbox-text">Predict the exact value of <code>currentSpeed</code> logged to the console:</p>
+              <pre><code>const speed = 0;
+const currentSpeed = speed ?? 100;
+console.log(currentSpeed);</code></pre>
+              <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">run answer.log</button>
+              <div class="sandbox-answer">
+                <div class="sandbox-answer-heading">0</div>
+                <p class="sandbox-answer-desc"><strong>Why:</strong> The nullish coalescing operator (<code>??</code>) strictly checks for <code>null</code> or <code>undefined</code>. Since <code>0</code> is a valid falsy number, the fallback <code>100</code> is ignored.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="sandbox-card hard">
+            <div class="sandbox-card-tab">
+              <span class="sandbox-badge hard">Hard</span>
+              <span class="sandbox-filename">q2.test.js</span>
+            </div>
+            <div class="sandbox-card-body">
+              <h3>Q2. Closure Scope &amp; Value Increment</h3>
+              <p class="sandbox-text">What sequence of numbers prints when executing these functions?</p>
+              <pre><code>function createCounter(start) {
   let count = start;
   return function() {
     count++;
@@ -116,35 +459,403 @@ console.log(currentSpeed);</code></pre>
 const myCounter = createCounter(10);
 myCounter();
 myCounter();</code></pre>
-      <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">Show Answer & Explanation</button>
-      <div class="sandbox-answer">
-        <div class="sandbox-answer-heading">✔️ Answer: 11, then 12</div>
-        <p class="sandbox-answer-desc">
-          <strong>Why:</strong> The inner function forms a persistent closure over <code>count</code>. The post-increment operator (<code>count++</code>) completes the addition operation before the value is printed on the next line.
-        </p>
-      </div>
-    </div>
+              <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">run answer.log</button>
+              <div class="sandbox-answer">
+                <div class="sandbox-answer-heading">11, then 12</div>
+                <p class="sandbox-answer-desc"><strong>Why:</strong> The inner function forms a persistent closure over <code>count</code>. The post-increment operator (<code>count++</code>) completes the addition before the value is printed on the next line.</p>
+              </div>
+            </div>
+          </div>
 
-    <!-- QUESTION 3 -->
-    <div class="sandbox-card impossible">
-      <span class="sandbox-badge impossible">Impossible</span>
-      <h3>Q3. Object Reference as Map Keys</h3>
-      <p class="sandbox-text">What does this map lookup return?</p>
-      <pre><code>const database = new Map();
+          <div class="sandbox-card impossible">
+            <div class="sandbox-card-tab">
+              <span class="sandbox-badge impossible">Impossible</span>
+              <span class="sandbox-filename">q3.test.js</span>
+            </div>
+            <div class="sandbox-card-body">
+              <h3>Q3. Object Reference as Map Keys</h3>
+              <p class="sandbox-text">What does this map lookup return?</p>
+              <pre><code>const database = new Map();
 database.set([101], "Admin Profile");
 console.log(database.get([101]));</code></pre>
-      <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">Show Answer & Explanation</button>
-      <div class="sandbox-answer">
-        <div class="sandbox-answer-heading">✔️ Answer: undefined</div>
-        <p class="sandbox-answer-desc">
-          <strong>Why:</strong> Arrays are reference types in the Heap. The array literal <code>[101]</code> in <code>.set()</code> has a completely different memory address than the <code>[101]</code> passed to <code>.get()</code>, causing the lookup to fail.
-        </p>
-      </div>
-    </div>
+              <button class="sandbox-toggle" onclick="toggleSandboxAnswer(this)">run answer.log</button>
+              <div class="sandbox-answer">
+                <div class="sandbox-answer-heading">undefined</div>
+                <p class="sandbox-answer-desc"><strong>Why:</strong> Arrays are reference types in the heap. The array literal <code>[101]</code> in <code>.set()</code> has a different memory address than the <code>[101]</code> passed to <code>.get()</code>, so the lookup fails.</p>
+              </div>
+            </div>
+          </div>
 
+        </div>
+      </section>
+    </div>
   </div>
-</section>
-<!-- ================= END OF EXAM SANDBOX SPACE ================= -->
-  <script src="script.js"></script>
+</div>
+
+<script>
+// --- Syllabus data (unchanged content) ---
+const masterSyllabus = [
+  { id:"m1", title:"core-concepts/", category:"JS Core Concepts",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures",
+    subQuests:[
+      {id:"s1_1", title:"Reference vs Value (Stack vs Heap, Primitive Copies vs Array/Object pointers)", importance:"critical", xp:50},
+      {id:"s1_2", title:"Execution Context & Call Stack (Creation vs Execution phase)", importance:"important", xp:50},
+      {id:"s1_3", title:"Scope Chain & Lexical Scope (Global, Function, and Block)", importance:"important", xp:40},
+      {id:"s1_4", title:"Hoisting Mechanics (var vs let/const & Temporal Dead Zone)", importance:"important", xp:40},
+      {id:"s1_5", title:"Closures (Definition, returning inner functions, and private state applications)", importance:"critical", xp:60}
+    ]},
+  { id:"m2", title:"es6-features/", category:"ES6+ Features",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment",
+    subQuests:[
+      {id:"s2_1", title:"Destructuring (Object and Array properties)", importance:"important", xp:30},
+      {id:"s2_2", title:"Spread vs Rest Operators (... syntax in arrays, objects, and function parameters)", importance:"critical", xp:40},
+      {id:"s2_3", title:"Optional Chaining (?.) for safe object tree exploration", importance:"important", xp:30},
+      {id:"s2_4", title:"Logical Operators & Short-circuiting (||, &&, and Nullish Coalescing ??)", importance:"critical", xp:40},
+      {id:"s2_5", title:"Enhanced Object Literals & Modules (import/export)", importance:"standard", xp:30}
+    ]},
+  { id:"m3", title:"data-handling/", category:"Data Handling",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    subQuests:[
+      {id:"s3_1", title:"Transformative Array methods (map, filter, reduce in depth)", importance:"critical", xp:60},
+      {id:"s3_2", title:"Search Array methods (find, forEach, some, every)", importance:"important", xp:30},
+      {id:"s3_3", title:"Sets (Creating collections of unique values, array de-duplication)", importance:"important", xp:35},
+      {id:"s3_4", title:"Maps (Key-value structures with non-string keys)", importance:"standard", xp:35}
+    ]},
+  { id:"m4", title:"error-handling/", category:"Error & Debugging",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch",
+    subQuests:[
+      {id:"s4_1", title:"Structured Error Flow (try, catch, finally block logic)", importance:"critical", xp:40},
+      {id:"s4_2", title:"Creating Custom Errors (throw new Error())", importance:"important", xp:30},
+      {id:"s4_3", title:"Using Browser DevTools (Breakpoints, stepping, Scope, and Watch windows)", importance:"important", xp:40}
+    ]},
+  { id:"m5", title:"dom-and-bom/", category:"DOM / BOM",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction",
+    subQuests:[
+      {id:"s5_1", title:"Dynamic DOM manipulation & node creation", importance:"important", xp:40},
+      {id:"s5_2", title:"Event Propagation (Event Capturing vs Bubbling phases)", importance:"critical", xp:50},
+      {id:"s5_3", title:"Event Delegation (Optimized handlers for dynamic structures)", importance:"critical", xp:50},
+      {id:"s5_4", title:"BOM Basics (localStorage, location, history API)", importance:"important", xp:40}
+    ]},
+  { id:"m6", title:"async-flows/", category:"Async Flows",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous",
+    subQuests:[
+      {id:"s6_1", title:"Under-the-hood Event Loop & Microtasks/Macrotasks queue", importance:"critical", xp:60},
+      {id:"s6_2", title:"Native Promises (states: pending, fulfilled, rejected)", importance:"critical", xp:50},
+      {id:"s6_3", title:"Async/Await syntax with error handling constructs", importance:"critical", xp:60}
+    ]},
+  { id:"m7", title:"oop-js/", category:"OOP JS",
+    mdnLink:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes",
+    subQuests:[
+      {id:"s7_1", title:"ES6 Classes, constructors, and instantiating instances", importance:"important", xp:40},
+      {id:"s7_2", title:"Prototypal Inheritance vs OOP Class Inheritance (extends and super)", importance:"critical", xp:50},
+      {id:"s7_3", title:"Encapsulation (using modern private class fields #)", importance:"important", xp:40}
+    ]}
+];
+
+// --- Audio ---
+const playSound = (type) => {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  if (type === 'success') {
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc.start(); osc.stop(ctx.currentTime + 0.3);
+  } else if (type === 'levelup') {
+    osc.type = 'sawtooth';
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => osc.frequency.setValueAtTime(freq, ctx.currentTime + (idx * 0.08)));
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+    osc.start(); osc.stop(ctx.currentTime + 0.8);
+  }
+};
+
+// --- State (persisted via artifact storage, not localStorage) ---
+const STORAGE_KEY = 'js-mastery-state';
+let state = { completedSubQuests: [], activeAccordions: [], totalXp: 0, level: 1 };
+const xpPerLevel = 500;
+let storageReady = false;
+
+const termPath = document.getElementById('term-path');
+
+const loadState = async () => {
+  try {
+    const result = await window.storage.get(STORAGE_KEY, false);
+    if (result && result.value) {
+      const parsed = JSON.parse(result.value);
+      state = Object.assign(state, parsed);
+    }
+  } catch (e) {
+    // no saved state yet — defaults stand
+  }
+  storageReady = true;
+  termPath.textContent = '~/study/javascript-mastery.log';
+};
+
+const saveState = async () => {
+  if (!storageReady) return;
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+  } catch (e) {
+    console.error('Could not save progress:', e);
+  }
+};
+
+const questListContainer = document.getElementById('quest-list');
+const levelDisplay = document.getElementById('level-display');
+const heroLevel = document.getElementById('hero-level');
+const rankDisplay = document.getElementById('rank-display');
+const currentXpText = document.getElementById('current-xp');
+const maxXpText = document.getElementById('max-xp');
+const xpBarFill = document.getElementById('xp-bar');
+const radialProgress = document.getElementById('radial-progress');
+const percentText = document.getElementById('percent-text');
+const motivateBanner = document.getElementById('motivate-banner');
+
+const getRank = (lvl) => {
+  if (lvl >= 8) return "Legendary JS Architect 🌟";
+  if (lvl >= 6) return "Asynchronous Wizard 🔮";
+  if (lvl >= 4) return "Closure Connoisseur 🎒";
+  if (lvl >= 2) return "Scope Voyager 🧭";
+  return "Console Explorer 🍼";
+};
+
+const triggerDopamineConfetti = (isLevelUp) => {
+  if (isLevelUp) {
+    confetti({ particleCount: 150, spread: 85, origin: { y: 0.6 }, colors: ['#bb9af7','#7aa2f7','#9ece6a'] });
+  } else {
+    confetti({ particleCount: 40, spread: 50, colors: ['#9ece6a','#7dcfff'] });
+  }
+};
+
+const triggerScreenShake = () => {
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 300);
+};
+
+const updateEngine = () => {
+  const allSubQuests = masterSyllabus.flatMap(m => m.subQuests);
+  const totalSubCount = allSubQuests.length;
+  const completedSubCount = state.completedSubQuests.length;
+
+  let calculatedXp = state.completedSubQuests.reduce((sum, subId) => {
+    const subQuest = allSubQuests.find(s => s.id === subId);
+    return sum + (subQuest ? subQuest.xp : 0);
+  }, 0);
+
+  const progressPercentage = totalSubCount > 0 ? Math.round((completedSubCount / totalSubCount) * 100) : 0;
+  const radius = 50;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (progressPercentage / 100) * circumference;
+  radialProgress.style.strokeDashoffset = offset;
+  percentText.innerText = `${progressPercentage}%`;
+
+  let newLevel = Math.floor(calculatedXp / xpPerLevel) + 1;
+  let xpThisLevel = calculatedXp % xpPerLevel;
+
+  if (newLevel > state.level) {
+    playSound('levelup');
+    triggerDopamineConfetti(true);
+    triggerScreenShake();
+    motivateBanner.innerText = `level up — welcome to lvl-${newLevel}`;
+  } else if (calculatedXp > state.totalXp) {
+    playSound('success');
+    triggerDopamineConfetti(false);
+  }
+
+  state.level = newLevel;
+  state.totalXp = calculatedXp;
+
+  levelDisplay.innerText = `lvl-${state.level}`;
+  heroLevel.innerText = `level(${state.level})`;
+  rankDisplay.innerText = getRank(state.level);
+  currentXpText.innerText = xpThisLevel;
+  maxXpText.innerText = xpPerLevel;
+  xpBarFill.style.width = `${(xpThisLevel / xpPerLevel) * 100}%`;
+
+  if (progressPercentage === 100) {
+    motivateBanner.innerText = "build passed — 100% mastery ✓";
+  } else if (progressPercentage > 0 && newLevel <= state.level) {
+    motivateBanner.innerText = `${progressPercentage}% of the syllabus committed`;
+  }
+
+  saveState();
+};
+
+const toggleAccordion = (mainId) => {
+  const index = state.activeAccordions.indexOf(mainId);
+  if (index === -1) state.activeAccordions.push(mainId);
+  else state.activeAccordions.splice(index, 1);
+  saveState();
+  renderQuestBoard();
+};
+
+const toggleSubQuest = (subId, event) => {
+  event.stopPropagation();
+  const idx = state.completedSubQuests.indexOf(subId);
+  if (idx === -1) state.completedSubQuests.push(subId);
+  else state.completedSubQuests.splice(idx, 1);
+  updateEngine();
+  renderQuestBoard();
+};
+
+const renderQuestBoard = () => {
+  questListContainer.innerHTML = '';
+
+  masterSyllabus.forEach(mainQuest => {
+    const isExpanded = state.activeAccordions.includes(mainQuest.id);
+    const subQuestsCount = mainQuest.subQuests.length;
+    const completedSubsThisTopic = mainQuest.subQuests.filter(s => state.completedSubQuests.includes(s.id)).length;
+    const topicPercent = subQuestsCount > 0 ? Math.round((completedSubsThisTopic / subQuestsCount) * 100) : 0;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = `quest-wrapper ${isExpanded ? 'active' : ''}`;
+
+    const header = document.createElement('div');
+    header.className = 'quest-header';
+    header.onclick = () => toggleAccordion(mainQuest.id);
+    header.innerHTML = `
+      <div class="quest-header-left">
+        <span class="arrow-icon">▸</span>
+        <span class="folder-icon">📁</span>
+        <div class="quest-title-box">
+          <h4>${mainQuest.title}</h4>
+          <div class="quest-sub-summary">${mainQuest.category} · ${completedSubsThisTopic}/${subQuestsCount} staged</div>
+        </div>
+      </div>
+      <div class="header-progress-pill">${topicPercent}%</div>
+    `;
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'quest-details-dropdown';
+
+    const subList = document.createElement('div');
+    subList.className = 'sub-quest-list';
+
+    const resourceBanner = document.createElement('div');
+    resourceBanner.className = 'resource-row';
+    resourceBanner.innerHTML = `<a href="${mainQuest.mdnLink}" target="_blank" rel="noopener" class="docs-link">open MDN docs</a>`;
+    subList.appendChild(resourceBanner);
+
+    mainQuest.subQuests.forEach(sub => {
+      const isSubDone = state.completedSubQuests.includes(sub.id);
+      const subElement = document.createElement('div');
+      subElement.className = `sub-quest-item ${isSubDone ? 'completed' : ''}`;
+      subElement.onclick = (e) => toggleSubQuest(sub.id, e);
+
+      let tagClass = 'standard';
+      let cleanTagText = sub.importance.toUpperCase();
+      if (sub.importance === 'critical') tagClass = 'critical';
+      else if (sub.importance === 'important') tagClass = 'important';
+
+      subElement.innerHTML = `
+        <div class="sub-left">
+          <span class="sub-checkbox">${isSubDone ? 'x' : ' '}</span>
+          <span class="sub-title">${sub.title}</span>
+        </div>
+        <div class="sub-right">
+          <span class="importance-tag ${tagClass}">${cleanTagText}</span>
+          <span class="sub-xp">+${sub.xp}xp</span>
+        </div>
+      `;
+      subList.appendChild(subElement);
+    });
+
+    dropdown.appendChild(subList);
+    wrapper.appendChild(header);
+    wrapper.appendChild(dropdown);
+    questListContainer.appendChild(wrapper);
+  });
+};
+
+// --- Pomodoro Focus Timer ---
+let timerInterval;
+let timeLeft = 25 * 60;
+let isTimerRunning = false;
+let isWorkMode = true;
+
+const timeDisplay = document.getElementById('time-display');
+const timerMode = document.getElementById('timer-mode');
+const startBtn = document.getElementById('start-timer');
+const resetBtn = document.getElementById('reset-timer');
+
+const updateTimerVisuals = () => {
+  const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  const seconds = (timeLeft % 60).toString().padStart(2, '0');
+  timeDisplay.innerText = `${minutes}:${seconds}`;
+};
+
+const toggleTimer = () => {
+  if (isTimerRunning) {
+    clearInterval(timerInterval);
+    startBtn.innerText = "run";
+    isTimerRunning = false;
+  } else {
+    isTimerRunning = true;
+    startBtn.innerText = "pause";
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateTimerVisuals();
+      } else {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        playSound('levelup');
+        triggerDopamineConfetti(true);
+        isWorkMode = !isWorkMode;
+        timeLeft = isWorkMode ? 25 * 60 : 5 * 60;
+        timerMode.innerText = isWorkMode ? "work session" : "break";
+        timeDisplay.style.color = isWorkMode ? "var(--red)" : "var(--green)";
+        updateTimerVisuals();
+        startBtn.innerText = "run";
+      }
+    }, 1000);
+  }
+};
+
+const resetTimerAction = () => {
+  clearInterval(timerInterval);
+  isTimerRunning = false;
+  startBtn.innerText = "run";
+  timeLeft = isWorkMode ? 25 * 60 : 5 * 60;
+  updateTimerVisuals();
+};
+
+startBtn.addEventListener('click', toggleTimer);
+resetBtn.addEventListener('click', resetTimerAction);
+updateTimerVisuals();
+
+// --- Init ---
+(async () => {
+  await loadState();
+  renderQuestBoard();
+  updateEngine();
+})();
+
+// --- Sandbox interactions ---
+function toggleSandboxAnswer(button) {
+  const answerDiv = button.nextElementSibling;
+  if (answerDiv.style.display === "block") {
+    answerDiv.style.display = "none";
+    button.textContent = "run answer.log";
+  } else {
+    answerDiv.style.display = "block";
+    button.textContent = "hide answer.log";
+  }
+}
+
+function filterSandbox(event, category) {
+  document.querySelectorAll('.sandbox-filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.sandbox-card').forEach(card => {
+    card.style.display = (category === 'all' || card.classList.contains(category)) ? 'block' : 'none';
+  });
+}
+</script>
 </body>
 </html>
