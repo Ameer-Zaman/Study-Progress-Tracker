@@ -5,7 +5,7 @@
   --bg-sub-card: #0f172a;
   --primary: #f59e0b; /* Golden Yellow */
   --accent: #10b981;  /* Emerald Green */
-  --critical: #ef4444; /* Coral Red for critical alerts */
+  --critical: #ef4444; /* Coral Red */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --glow-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
@@ -180,6 +180,68 @@ body {
   font-style: italic;
 }
 
+/* --- Focus Timer Styles --- */
+.timer-card {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.timer-display {
+  font-size: 3.5rem;
+  font-weight: 900;
+  font-family: monospace;
+  color: var(--critical); /* Red for work mode */
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+  letter-spacing: 2px;
+  margin: 0.5rem 0;
+  transition: color 0.3s;
+}
+
+.timer-mode {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn, .btn-outline {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.btn {
+  background: var(--primary);
+  color: #000;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+}
+
+.btn:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
 /* --- Quest List & Dropdowns --- */
 .quest-board h2 {
   font-size: 1.5rem;
@@ -268,7 +330,7 @@ body {
 }
 
 .quest-wrapper.active .quest-details-dropdown {
-  max-height: 500px; /* Adjust if content size exceeds this limit */
+  max-height: 800px; /* Keep this large enough for checklist content */
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
