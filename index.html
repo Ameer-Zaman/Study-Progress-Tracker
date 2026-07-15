@@ -3,70 +3,311 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JS Quest: Ultimate Mastery Tracker</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Canvas Confetti Library for dopamine hits -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <title>JavaScript Masterclass Exam Sandbox</title>
+  <style>
+    /* Global Reset and Background */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0b0f19;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #f8fafc;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    /* Sandbox Container */
+    .exam-sandbox {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #0f172a; /* Sleek Dark Slate Theme */
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #3b82f6; /* Electric Blue Accent */
+      margin-bottom: 8px;
+    }
+
+    .sandbox-subtitle {
+      color: #94a3b8;
+      margin-bottom: 28px;
+      font-size: 1rem;
+    }
+
+    /* Filter Controls */
+    .filter-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 20px;
+    }
+
+    .filter-btn {
+      background-color: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .filter-btn:hover {
+      background-color: #334155;
+      color: #ffffff;
+    }
+
+    .filter-btn.active {
+      background-color: #3b82f6;
+      color: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Question Cards */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .question-card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .question-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    .easy { background-color: #10b981; color: #ffffff; }          /* Green */
+    .hard-badge { background-color: #f59e0b; color: #ffffff; }     /* Orange */
+    .impossible-badge { background-color: #ef4444; color: #ffffff; } /* Red */
+
+    /* Typography & Code Blocks */
+    h3 {
+      font-size: 1.25rem;
+      color: #f1f5f9;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+
+    pre {
+      background-color: #05070f;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      border-left: 4px solid #3b82f6;
+      margin-bottom: 16px;
+    }
+
+    code {
+      font-family: 'Consolas', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    /* Buttons */
+    .toggle-btn {
+      background-color: #334155;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background-color: #475569;
+    }
+
+    /* Revealable Answer Blocks */
+    .answer-content {
+      display: none;
+      background-color: #05070f;
+      border: 1px dashed #475569;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .answer-title {
+      font-weight: 700;
+      color: #10b981; /* Success Green */
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .answer-desc {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .answer-desc strong {
+      color: #e2e8f0;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="game-container">
-    <!-- HERO HEADER -->
-    <header class="hero-header">
-      <div class="badge">⚔️ ADVANCED JS MASTERY QUEST</div>
-      <h1>Level Up Your JavaScript</h1>
-      <p>Expand the topics, conquer the sub-quests, and claim your ultimate developer status!</p>
-    </header>
+  <section class="exam-sandbox">
+    <h2>JavaScript Masterclass Exam Sandbox</h2>
+    <p class="sandbox-subtitle">Filter by difficulty to train your brain on the nastiest exam and interview questions.</p>
 
-    <!-- STATUS DASHBOARD -->
-    <section class="dashboard">
-      <div class="stat-card level-card">
-        <h3>PLAYER LEVEL</h3>
-        <div class="level-badge" id="level-display">LVL 1</div>
-        <p id="rank-display">Novice Coder</p>
-      </div>
+    <!-- Filter Tabs -->
+    <div class="filter-container">
+      <button class="filter-btn active" onclick="filterDifficulty(event, 'all')">All Questions</button>
+      <button class="filter-btn" onclick="filterDifficulty(event, 'easy-medium')">Simple & Medium</button>
+      <button class="filter-btn" onclick="filterDifficulty(event, 'hard')">Hard</button>
+      <button class="filter-btn" onclick="filterDifficulty(event, 'impossible')">Impossible / Interview</button>
+    </div>
 
-      <div class="stat-card progress-card">
-        <h3>TOTAL PROGRESS</h3>
-        <div class="radial-progress-container">
-          <svg class="radial-svg" viewBox="0 0 120 120">
-            <circle class="bg-circle" cx="60" cy="60" r="50" />
-            <circle class="fg-circle" id="radial-progress" cx="60" cy="60" r="50" />
-          </svg>
-          <span class="progress-percent" id="percent-text">0%</span>
+    <!-- Question List -->
+    <div class="questions-list">
+
+      <!-- QUESTION 1 (EASY-MEDIUM) -->
+      <div class="question-card easy-medium">
+        <span class="badge easy">Simple</span>
+        <h3>Q1. The Nullish Fallback Trap</h3>
+        <p class="question-text">Predict the value of <code>currentSpeed</code> printed to the console:</p>
+        <pre><code>const speed = 0;
+const currentSpeed = speed ?? 100;
+console.log(currentSpeed);</code></pre>
+        <button class="toggle-btn" onclick="toggleAnswer(this)">Reveal Professional Answer</button>
+        <div class="answer-content">
+          <div class="answer-title">✔️ Correct Answer: 0</div>
+          <div class="answer-desc">
+            <strong>Professional Explanation:</strong> The nullish coalescing operator (<code>??</code>) strictly checks for <code>null</code> or <code>undefined</code>. Since <code>0</code> is a valid falsy number, the fallback value of <code>100</code> is completely ignored, correctly preserving the <code>0</code>.
+          </div>
         </div>
       </div>
 
-      <!-- FOCUS TIMER CARD -->
-      <div class="stat-card timer-card">
-        <h3>FOCUS TIMER (POMODORO)</h3>
-        <div class="timer-display" id="time-display">25:00</div>
-        <div class="timer-mode" id="timer-mode">Work Session 🔥</div>
-        <div class="timer-controls">
-          <button id="start-timer" class="btn">▶ Start</button>
-          <button id="reset-timer" class="btn-outline">↺ Reset</button>
+      <!-- QUESTION 2 (HARD) -->
+      <div class="question-card hard">
+        <span class="badge hard-badge">Hard</span>
+        <h3>Q2. Closure Scope & Value Increment</h3>
+        <p class="question-text">Analyze this code. What sequence of logs will execute when calling these functions?</p>
+        <pre><code>function createCounter(start) {
+  let count = start;
+  return function() {
+    count++;
+    console.log(count);
+  };
+}
+const myCounter = createCounter(10);
+myCounter();
+myCounter();</code></pre>
+        <button class="toggle-btn" onclick="toggleAnswer(this)">Reveal Professional Answer</button>
+        <div class="answer-content">
+          <div class="answer-title">✔️ Correct Answer: 11, then 12</div>
+          <div class="answer-desc">
+            <strong>Professional Explanation:</strong> The inner function forms a persistent closure over the variable <code>count</code>. The post-increment operator (<code>count++</code>) completes the increment operation inside local storage before the value is printed to the terminal console on the next line by <code>console.log</code>.
+          </div>
         </div>
       </div>
 
-      <div class="stat-card xp-card">
-        <h3>EXPERIENCE POINTS (XP)</h3>
-        <div class="xp-numbers"><span id="current-xp">0</span> / <span id="max-xp">1000</span> XP</div>
-        <div class="xp-bar-container">
-          <div class="xp-bar-fill" id="xp-bar"></div>
+      <!-- QUESTION 3 (IMPOSSIBLE) -->
+      <div class="question-card impossible">
+        <span class="badge impossible-badge">Impossible / Interview</span>
+        <h3>Q3. Object Reference as Map Keys</h3>
+        <p class="question-text">What is printed by this lookup?</p>
+        <pre><code>const database = new Map();
+database.set([101], "Admin Profile");
+console.log(database.get([101]));</code></pre>
+        <button class="toggle-btn" onclick="toggleAnswer(this)">Reveal Professional Answer</button>
+        <div class="answer-content">
+          <div class="answer-title">✔️ Correct Answer: undefined</div>
+          <div class="answer-desc">
+            <strong>Professional Explanation:</strong> Arrays are reference types stored in Heap memory. The array literal <code>[101]</code> passed to <code>.set()</code> has a completely different memory address than the array literal <code>[101]</code> passed to <code>.get()</code>. Because Map key matching uses strict equality (<code>===</code>) on reference pointers, the lookup fails.
+          </div>
         </div>
-        <p class="motivate-text" id="motivate-banner">Complete sub-tasks to earn XP!</p>
       </div>
-    </section>
 
-    <!-- QUEST LIST (THE SYLLABUS) -->
-    <main class="quest-board">
-      <h2>Active Quests (Syllabus & Inner Topics)</h2>
-      <div class="quest-list" id="quest-list">
-        <!-- Main Quests and dropdowns will be dynamically injected here -->
-      </div>
-    </main>
-  </div>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
+  <script>
+    // Filter Logic
+    function filterDifficulty(event, category) {
+      // Update active button classes
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Filter display properties of cards
+      const cards = document.querySelectorAll('.question-card');
+      cards.forEach(card => {
+        if (category === 'all') {
+          card.style.display = 'block';
+        } else {
+          if (card.classList.contains(category)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // Toggle Answer Display
+    function toggleAnswer(button) {
+      const answerDiv = button.nextElementSibling;
+      if (answerDiv.style.display === "block") {
+        answerDiv.style.display = "none";
+        button.textContent = "Reveal Professional Answer";
+      } else {
+        answerDiv.style.display = "block";
+        button.textContent = "Hide Answer";
+      }
+    }
+  </script>
 </body>
 </html>
