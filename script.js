@@ -389,3 +389,35 @@ updateTimerVisuals(); // Initialize the display on load
 // --- Initialize App ---
 renderQuestBoard();
 updateEngine();
+
+// Toggle Answer visibility inside the Sandbox space
+function toggleSandboxAnswer(button) {
+  const answerDiv = button.nextElementSibling;
+  if (answerDiv.style.display === "block") {
+    answerDiv.style.display = "none";
+    button.textContent = "Show Answer & Explanation";
+  } else {
+    answerDiv.style.display = "block";
+    button.textContent = "Hide Explanation";
+  }
+}
+
+// Filter cards inside the Sandbox space
+function filterSandbox(event, category) {
+  const buttons = document.querySelectorAll('.sandbox-filter-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const cards = document.querySelectorAll('.sandbox-card');
+  cards.forEach(card => {
+    if (category === 'all') {
+      card.style.display = 'block';
+    } else {
+      if (card.classList.contains(category)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+  });
+}
