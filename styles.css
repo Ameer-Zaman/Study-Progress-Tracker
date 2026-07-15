@@ -1,0 +1,391 @@
+/* --- Core Variables & Theme --- */
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-sub-card: #0f172a;
+  --primary: #f59e0b; /* Golden Yellow */
+  --accent: #10b981;  /* Emerald Green */
+  --critical: #ef4444; /* Coral Red for critical alerts */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glow-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* --- Hero Header --- */
+.hero-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  box-shadow: var(--glow-shadow);
+}
+
+.hero-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #f59e0b, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-header p {
+  color: var(--text-muted);
+}
+
+/* --- Dashboard Stat Cards --- */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stat-card h3 {
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* Level Card */
+.level-badge {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+#rank-display {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  color: var(--accent);
+}
+
+/* Radial Progress Card */
+.radial-progress-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.radial-svg {
+  transform: rotate(-90deg);
+}
+
+.bg-circle, .fg-circle {
+  fill: none;
+  stroke-width: 8px;
+}
+
+.bg-circle {
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.fg-circle {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-dasharray: 314; 
+  stroke-dashoffset: 314;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-percent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/* XP Card */
+.xp-numbers {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.xp-bar-container {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.xp-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 6px;
+  transition: width 0.4s ease-out;
+}
+
+.motivate-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- Quest List & Dropdowns --- */
+.quest-board h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.quest-wrapper {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.quest-wrapper:hover {
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+/* Quest Header (Clickable for Dropdown) */
+.quest-header {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.01);
+  user-select: none;
+}
+
+.quest-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.arrow-icon {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.quest-wrapper.active .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.quest-title-box h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.quest-sub-summary {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.quest-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-progress-pill {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+/* Dropdown Content Area */
+.quest-details-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: var(--bg-sub-card);
+  border-top: 0px solid rgba(255, 255, 255, 0.05);
+}
+
+.quest-wrapper.active .quest-details-dropdown {
+  max-height: 500px; /* Adjust if content size exceeds this limit */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Sub-quest Rows inside dropdown */
+.sub-quest-list {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sub-quest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sub-quest-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(4px);
+}
+
+.sub-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Inner Checkbox */
+.sub-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.sub-quest-item.completed .sub-checkbox {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.sub-quest-item.completed .sub-checkbox::after {
+  content: "✓";
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.sub-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sub-quest-item.completed .sub-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.sub-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Badges */
+.importance-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.importance-tag.critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--critical);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.importance-tag.important {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.importance-tag.standard {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+}
+
+.sub-xp {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Screen Shake */
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 3px); }
+  50% { transform: translate(3px, -3px); }
+  75% { transform: translate(-3px, -3px); }
+}
+
+.shake {
+  animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
