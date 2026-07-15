@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Quest: Inner Mastery Edition</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Canvas Confetti Library for dopamine hits -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <div class="game-container">
+    <!-- HERO HEADER -->
+    <header class="hero-header">
+      <div class="badge">⚔️ ADVANCED JS MASTERY QUEST</div>
+      <h1>Level Up Your JavaScript</h1>
+      <p>Expand the topics, conquer the sub-quests, and claim your ultimate developer status!</p>
+    </header>
+
+    <!-- STATUS DASHBOARD -->
+    <section class="dashboard">
+      <div class="stat-card level-card">
+        <h3>PLAYER LEVEL</h3>
+        <div class="level-badge" id="level-display">LVL 1</div>
+        <p id="rank-display">Novice Coder</p>
+      </div>
+
+      <div class="stat-card progress-card">
+        <h3>TOTAL PROGRESS</h3>
+        <div class="radial-progress-container">
+          <svg class="radial-svg" viewBox="0 0 120 120">
+            <circle class="bg-circle" cx="60" cy="60" r="50" />
+            <circle class="fg-circle" id="radial-progress" cx="60" cy="60" r="50" />
+          </svg>
+          <span class="progress-percent" id="percent-text">0%</span>
+        </div>
+      </div>
+
+      <div class="stat-card xp-card">
+        <h3>EXPERIENCE POINTS (XP)</h3>
+        <div class="xp-numbers"><span id="current-xp">0</span> / <span id="max-xp">1000</span> XP</div>
+        <div class="xp-bar-container">
+          <div class="xp-bar-fill" id="xp-bar"></div>
+        </div>
+        <p class="motivate-text" id="motivate-banner">Complete sub-tasks to earn XP!</p>
+      </div>
+    </section>
+
+    <!-- QUEST LIST (THE SYLLABUS) -->
+    <main class="quest-board">
+      <h2>Active Quests (Syllabus & Inner Topics)</h2>
+      <div class="quest-list" id="quest-list">
+        <!-- Main Quests and dropdowns will be dynamically injected here -->
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
