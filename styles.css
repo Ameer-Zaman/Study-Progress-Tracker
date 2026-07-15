@@ -451,3 +451,151 @@ body {
 .shake {
   animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
 }
+
+/* --- EXAM SANDBOX SPACE STYLING --- */
+.exam-sandbox {
+  margin: 50px 0;
+  padding: 30px;
+  background-color: #0f172a; /* Dark sleek container */
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  color: #f8fafc;
+}
+
+.sandbox-header h2 {
+  font-size: 1.8rem;
+  color: #3b82f6;
+  margin-bottom: 6px;
+}
+
+.sandbox-header p {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.sandbox-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 15px;
+}
+
+.sandbox-filter-btn {
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sandbox-filter-btn:hover {
+  background-color: #334155;
+}
+
+.sandbox-filter-btn.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.sandbox-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sandbox-card {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.sandbox-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.sandbox-badge.easy { background-color: #10b981; color: #fff; }
+.sandbox-badge.hard { background-color: #f59e0b; color: #fff; }
+.sandbox-badge.impossible { background-color: #ef4444; color: #fff; }
+
+.sandbox-card h3 {
+  font-size: 1.2rem;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.sandbox-text {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.sandbox-card pre {
+  background-color: #05070f;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  border-left: 3px solid #3b82f6;
+  margin-bottom: 12px;
+}
+
+.sandbox-card code {
+  font-family: 'Courier New', Courier, monospace;
+  color: #e2e8f0;
+}
+
+.sandbox-toggle {
+  background-color: #334155;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sandbox-toggle:hover {
+  background-color: #475569;
+}
+
+.sandbox-answer {
+  display: none;
+  background-color: #05070f;
+  border: 1px dashed #475569;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  animation: sandboxFade 0.2s ease-out;
+}
+
+@keyframes sandboxFade {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sandbox-answer-heading {
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 6px;
+}
+
+.sandbox-answer-desc {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
