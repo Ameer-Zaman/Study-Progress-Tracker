@@ -321,6 +321,71 @@ const renderQuestBoard = () => {
   });
 };
 
+// --- Pomodoro Focus Timer Logic ---
+let timerInterval;
+let timeLeft = 25 * 60; // 25 minutes in seconds
+let isTimerRunning = false;
+let isWorkMode = true;
+
+const timeDisplay = document.getElementById('time-display');
+const timerMode = document.getElementById('timer-mode');
+const startBtn = document.getElementById('start-timer');
+const resetBtn = document.getElementById('reset-timer');
+
+const updateTimerVisuals = () => {
+  const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+  const seconds = (timeLeft % 60).toString().padStart(2, '0');
+  timeDisplay.innerText = `${minutes}:${seconds}`;
+};
+
+const toggleTimer = () => {
+  if (isTimerRunning) {
+    clearInterval(timerInterval);
+    startBtn.innerText = "▶ Start";
+    isTimerRunning = false;
+  } else {
+    isTimerRunning = true;
+    startBtn.innerText = "⏸ Pause";
+    
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateTimerVisuals();
+      } else {
+        // Timer Finished!
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        playSound('levelup'); // Epic level-up chime
+        triggerDopamineConfetti(true); // Big firework splash
+        
+        // Switch Modes
+        isWorkMode = !isWorkMode;
+        timeLeft = isWorkMode ? 25 * 60 : 5 * 60; // 25 min work, 5 min break
+        timerMode.innerText = isWorkMode ? "Work Session 🔥" : "Break Time ☕";
+        
+        // Change color variables depending on mode
+        timeDisplay.style.color = isWorkMode ? "var(--critical)" : "var(--accent)";
+        timeDisplay.style.textShadow = isWorkMode ? "0 0 15px rgba(239, 68, 68, 0.4)" : "0 0 15px rgba(16, 185, 129, 0.4)";
+        
+        updateTimerVisuals();
+        startBtn.innerText = "▶ Start";
+      }
+    }, 1000);
+  }
+};
+
+const resetTimerAction = () => {
+  clearInterval(timerInterval);
+  isTimerRunning = false;
+  startBtn.innerText = "▶ Start";
+  timeLeft = isWorkMode ? 25 * 60 : 5 * 60;
+  updateTimerVisuals();
+};
+
+startBtn.addEventListener('click', toggleTimer);
+resetBtn.addEventListener('click', resetTimerAction);
+updateTimerVisuals(); // Initialize the display on load
+
 // --- Initialize App ---
 renderQuestBoard();
 updateEngine();
