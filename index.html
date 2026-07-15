@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JS Quest: Inner Mastery Edition</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>JS Quest: Ultimate Mastery Tracker</title>
+  <link rel="stylesheet" href="style.css">
   <!-- Canvas Confetti Library for dopamine hits -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -37,6 +37,17 @@
         </div>
       </div>
 
+      <!-- FOCUS TIMER CARD -->
+      <div class="stat-card timer-card">
+        <h3>FOCUS TIMER (POMODORO)</h3>
+        <div class="timer-display" id="time-display">25:00</div>
+        <div class="timer-mode" id="timer-mode">Work Session 🔥</div>
+        <div class="timer-controls">
+          <button id="start-timer" class="btn">▶ Start</button>
+          <button id="reset-timer" class="btn-outline">↺ Reset</button>
+        </div>
+      </div>
+
       <div class="stat-card xp-card">
         <h3>EXPERIENCE POINTS (XP)</h3>
         <div class="xp-numbers"><span id="current-xp">0</span> / <span id="max-xp">1000</span> XP</div>
@@ -56,6 +67,6 @@
     </main>
   </div>
 
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
